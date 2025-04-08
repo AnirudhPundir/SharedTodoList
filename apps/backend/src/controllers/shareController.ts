@@ -8,7 +8,7 @@ type ShareParams = {
     taskId: string;
 };
 
-export const shareController = {
+export const shareController = {    
     // Share a task with another user
     shareTask: async (request: any, reply: any) => {
         const { taskId } = request.params as ShareParams;
