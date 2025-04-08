@@ -1,4 +1,5 @@
 import { FastifyInstance } from "fastify";
+import { taskController } from "../controllers/taskController";
 
 import prisma from "../../../../packages/db/prisma"; 
 
@@ -22,57 +23,17 @@ type TaskParams = {
 export default async function taskRoutes(fastify: FastifyInstance){
 
     //route to create a task
-    fastify.post('/tasks', async (request, reply) => {
-        const {title, description, userId} = request.body as TaskRequest
-
-        const task = await prisma.task.create({data: {title, description, userId}});
-
-        return reply.send(task)
-    });
-
+    fastify.post('/tasks', taskController.createTask);
 
     //route to get all tasks
-    fastify.get('/tasks', async(request, reply) => {
-        const {userId} = request.body as GetTypesRequest;
-
-        const tasks = await prisma.task.findMany({
-            where: {userId}
-        });
-
-        return reply.send(tasks)
-    });
+    fastify.get('/tasks', taskController.getTasks);
 
     //route to update a task
-    fastify.put('/tasks/:taskId', async(request, reply) => {
-        const {taskId } = request.params as TaskParams;
-
-        const {title, description} = request.body as TaskRequest;
-
-        const updatedTask = await prisma.task.update({
-            where: {taskId},
-            data: { title, description}
-        });
-
-        return reply.send(updatedTask)
-    });
+    fastify.put('/tasks/:taskId', taskController.updateTask);
 
     //route to delete a task
-    fastify.delete('/tasks/:taskId', async(request, reply) => {
-        const {taskId } = request.params as TaskParams;
-
-        await prisma.task.delete({where : taskId})
-
-        return reply.send({message: 'Task Deleted'})
-    });
+    fastify.delete('/tasks/:taskId', taskController.deleteTask);
 
     //route to fetch all the task shared with the user
-    fastify.get('/tasks', async(request, reply) => {
-        const {userId} = request.body as GetTypesRequest;
-
-        const tasks = await prisma.task.findMany({
-            where: {shareWith: userId}
-        });
-
-        return reply.send(tasks)
-    });
+    fastify.get('/shared-tasks', taskController.getSharedTasks);
 }
